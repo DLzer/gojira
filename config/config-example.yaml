@@ -37,7 +37,9 @@ metrics:
   ServiceName: gojira
 
 github:
-  ApiKey: your_github_api_key
+  token: your_github_token
+  version: "2022-11-28"
+  owner: your_github_owner_title
 
 discord:
   ApiKey: your_discord_api_key

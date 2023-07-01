@@ -1,0 +1,14 @@
+[
+    {
+        "TEST": {
+            "GitHubRepositoryName": "test_repo",
+            "DiscordChannelID": "12359912599215"
+        }
+    },
+    {
+        "BTEST": {
+            "GitHubRepositoryName": "test_repo_b",
+            "DiscordChannelID": "59992105012599"
+        }
+    }
+]

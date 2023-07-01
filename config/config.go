@@ -14,6 +14,8 @@ type Config struct {
 	Redis   RedisConfig
 	Metrics Metrics
 	Logger  Logger
+	Github  Github
+	Discord Discord
 }
 
 // Server config struct
@@ -63,8 +65,10 @@ type Metrics struct {
 }
 
 // GitHub Config
-type GitHub struct {
-	ApiKey string
+type Github struct {
+	Token   string
+	Version string
+	Owner   string
 }
 
 // Discord Config
