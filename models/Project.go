@@ -1,7 +1,8 @@
 package models
 
+// ProjectMap represents a structure that holds mappings from JIRA to it's distribution sources
 type ProjectMap struct {
-	JiraProjectKey   string `json:"jiraProjectKey"`
-	DiscordProjectID string `json:"discordProjectID"`
-	GithubProjectKey string `json:"gituhbProjectKey"`
+	ProjectKey           string `json:"ProjectKey,omitempty"`
+	GitHubRepositoryName string `json:"GitHubRepositoryName,omitempty"`
+	DiscordChannelID     string `json:"DiscordChannelID,omitempty"`
 }
