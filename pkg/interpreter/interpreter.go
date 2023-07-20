@@ -2,6 +2,7 @@ package interpreter
 
 import (
 	"context"
+	"strings"
 
 	"github.com/DLzer/gojira/models"
 	"go.opentelemetry.io/otel"
@@ -14,13 +15,19 @@ func Interpret(ctx context.Context, message *models.JiraWebhookMessage) *models.
 
 	var eventMap models.EventMap
 
+	issueData := strings.Split(message.Issue.Key, "-")
+
 	switch message.WebhookEvent {
 	case "jira:issue_updated":
 		eventMap.EventType = models.IssueUpdated
+		eventMap.EventKey = issueData[0]
+		eventMap.EventID = issueData[1]
 		eventMap.Created = false
 		eventMap.Updated = true
 	case "jira:issue_created":
 		eventMap.EventType = models.IssueCreated
+		eventMap.EventKey = issueData[0]
+		eventMap.EventID = issueData[1]
 		eventMap.Created = false
 		eventMap.Updated = true
 	default:
