@@ -8,6 +8,9 @@ import (
 	"github.com/DLzer/gojira/pkg/metric"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+
+	receiverHttp "github.com/DLzer/gojira/internal/receiver/delivery/http"
+	receiverService "github.com/DLzer/gojira/internal/receiver/service"
 )
 
 // Map Server Handlers
@@ -21,6 +24,10 @@ func (s *Server) MapHandlers(e *echo.Echo) error {
 		s.cfg.Metrics.URL,
 		s.cfg.Metrics.ServiceName,
 	)
+
+	// Init Handlers
+	receiverServices := receiverService.NewReceiverService(s.cfg, s.logger)
+	receiverHandlers := receiverHttp.NewReceiverHandlers(s.cfg, receiverServices, s.dg, s.logger)
 
 	// Swagger Setup
 	// docs.SwaggerInfo.Title = "Echo Rest API"
@@ -68,8 +75,10 @@ func (s *Server) MapHandlers(e *echo.Echo) error {
 	// Define Route Group
 	v1 := e.Group("/v1")
 	health := v1.Group("/health")
+	receiverGroup := v1.Group("/receiver")
 
 	// Map groups to handlers
+	receiverHttp.MapReceiverRoutes(receiverGroup, receiverHandlers)
 
 	// Health route function
 	health.GET("", func(c echo.Context) error {

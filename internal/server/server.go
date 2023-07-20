@@ -10,6 +10,7 @@ import (
 
 	"github.com/DLzer/gojira/config"
 	"github.com/DLzer/gojira/pkg/logger"
+	"github.com/bwmarrin/discordgo"
 	"github.com/labstack/echo/v4"
 	"github.com/redis/go-redis/v9"
 )
@@ -24,11 +25,12 @@ type Server struct {
 	echo        *echo.Echo
 	cfg         *config.Config
 	redisClient *redis.Client
+	dg          *discordgo.Session
 	logger      logger.Logger
 }
 
 // NewServer constructor
-func NewServer(cfg *config.Config, redisClient *redis.Client, logger logger.Logger) *Server {
+func NewServer(cfg *config.Config, redisClient *redis.Client, dg *discordgo.Session, logger logger.Logger) *Server {
 	return &Server{echo: echo.New(), cfg: cfg, redisClient: redisClient, logger: logger}
 }
 
