@@ -13,6 +13,7 @@ type Config struct {
 	Server  ServerConfig
 	Redis   RedisConfig
 	Metrics Metrics
+	Jira    Jira
 	Logger  Logger
 	Github  Github
 	Discord Discord
@@ -62,6 +63,11 @@ type RedisConfig struct {
 type Metrics struct {
 	URL         string
 	ServiceName string
+}
+
+// Jira Config
+type Jira struct {
+	BaseUrl string
 }
 
 // GitHub Config

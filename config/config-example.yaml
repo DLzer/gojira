@@ -36,16 +36,19 @@ metrics:
   URL: localhost:7070
   ServiceName: gojira
 
+jira:
+  BaseUrl: "https://yourcompany.atlassian.net/browse/"
+  
 github:
-  token: your_github_token
-  version: "2022-11-28"
-  owner: your_github_owner_title
-  enable: false
+  Token: your_github_token
+  Version: "2022-11-28"
+  Owner: your_github_owner_title
+  Enable: false
 
 discord:
   BotToken: your_discord_api_key
-  enable: true
+  Enable: true
 
 slack:
   ApiKey: your_slack_api_key
-  enable: false
+  Enable: false
