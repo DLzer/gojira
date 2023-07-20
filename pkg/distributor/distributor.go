@@ -2,7 +2,9 @@ package distributor
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 
 	"github.com/DLzer/gojira/config"
@@ -12,20 +14,34 @@ import (
 )
 
 // MapDistribution readsd the incomning message and event to return an object with the relative outgoing project IDs
-func MapDistribution(ctx context.Context, message *models.JiraWebhookMessage, event *models.EventMap) *models.ProjectMap {
+func MapDistribution(ctx context.Context, message *models.JiraWebhookMessage, event *models.EventMap) (*models.ProjectMap, error) {
 	_, span := otel.Tracer("Receiver").Start(ctx, "distributor.MapDistribution")
 	defer span.End()
 
-	// Based on the incoming event type we will perform a few actions.
-	// - Determine the github project ID from the JiraProjectKey
-	// - Determine the discorcd channel ID from the JiraProjectKey
-	// - Put together our struct for response
+	// Load ProjectMap File
+	file, err := ioutil.ReadFile("project_map.json")
+	if err != nil {
+		log.Fatal("Error", err)
+	}
 
-	return nil
+	var projectMap []models.ProjectMap
+
+	err = json.Unmarshal([]byte(file), &projectMap)
+	if err != nil {
+		log.Fatal("Error", err)
+	}
+
+	for x := range projectMap {
+		if projectMap[x].ProjectKey == event.EventKey {
+			return &projectMap[x], nil
+		}
+	}
+
+	return nil, nil
 }
 
 // Distribute will broadcast multiple message distributions to multiple sources if those sources are enabled
-func Distribute(ctx context.Context, cfg *config.Config, message *models.JiraWebhookMessage, projectMap *models.ProjectMap, dg *discordgo.Session) error {
+func Distribute(ctx context.Context, cfg *config.Config, message *models.JiraWebhookMessage, projectMap *models.ProjectMap, eventMap *models.EventMap, dg *discordgo.Session) error {
 	_, span := otel.Tracer("Receiver").Start(ctx, "distributor.Distribute")
 	defer span.End()
 
@@ -36,7 +52,10 @@ func Distribute(ctx context.Context, cfg *config.Config, message *models.JiraWeb
 
 	// Distribute to Discord
 	if cfg.Discord.Enable {
-		_ = DistributeToDiscord(ctx, cfg, message, projectMap, dg)
+		err := DistributeToDiscord(ctx, cfg, message, projectMap, eventMap, dg)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -68,20 +87,29 @@ func DistributeToGithub(ctx context.Context, cfg *config.Config) error {
 }
 
 // DistributeToDiscord will craft a message embed and send it to discord
-func DistributeToDiscord(ctx context.Context, cfg *config.Config, message *models.JiraWebhookMessage, projectMap *models.ProjectMap, dg *discordgo.Session) error {
+func DistributeToDiscord(ctx context.Context, cfg *config.Config, message *models.JiraWebhookMessage, projectMap *models.ProjectMap, event *models.EventMap, dg *discordgo.Session) error {
 	_, span := otel.Tracer("Receiver").Start(ctx, "distributor.Distribute.DistributeToDiscord")
 	defer span.End()
 
+	fmt.Println("Attempting Discord Dispatch to Channel: ", projectMap.DiscordChannelID)
+
 	embed := &discordgo.MessageEmbed{
-		URL:         fmt.Sprintf("%s%s", cfg.Jira.BaseUrl, projectMap.JiraProjectKey),
-		Author:      &discordgo.MessageEmbedAuthor{},
+		Title: fmt.Sprintf("%s-%s %s", event.EventKey, event.EventID, message.Issue.Fields.Summary),
+		URL:   fmt.Sprintf("%s/%s%s", cfg.Jira.BaseUrl, event.EventKey, event.EventID),
+		Author: &discordgo.MessageEmbedAuthor{
+			Name:    message.User.Name,
+			IconURL: message.User.AvatarUrls.Small,
+		},
 		Color:       0x00ff00,
-		Description: message.Issue.Fields.Summary,
+		Description: message.Issue.Fields.Description,
+		Footer: &discordgo.MessageEmbedFooter{
+			Text: "Powered by your friend, GoJIRA",
+		},
 	}
 
-	_, err := dg.ChannelMessageSendEmbed(projectMap.DiscordProjectID, embed)
+	_, err := dg.ChannelMessageSendEmbed(projectMap.DiscordChannelID, embed)
 	if err != nil {
-		log.Print("Embed Send Error", err)
+		log.Println("Embed Send Error", err)
 		return err
 	}
 
