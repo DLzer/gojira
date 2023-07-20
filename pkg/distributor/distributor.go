@@ -2,10 +2,12 @@ package distributor
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	"github.com/DLzer/gojira/config"
 	"github.com/DLzer/gojira/models"
+	"github.com/bwmarrin/discordgo"
 	"go.opentelemetry.io/otel"
 )
 
@@ -22,8 +24,27 @@ func MapDistribution(ctx context.Context, message *models.JiraWebhookMessage, ev
 	return nil
 }
 
-func Distribute(ctx context.Context, cfg *config.Config) error {
+// Distribute will broadcast multiple message distributions to multiple sources if those sources are enabled
+func Distribute(ctx context.Context, cfg *config.Config, message *models.JiraWebhookMessage, projectMap *models.ProjectMap, dg *discordgo.Session) error {
 	_, span := otel.Tracer("Receiver").Start(ctx, "distributor.Distribute")
+	defer span.End()
+
+	// Distribute to Github
+	if cfg.Github.Enable {
+		_ = DistributeToGithub(ctx, cfg)
+	}
+
+	// Distribute to Discord
+	if cfg.Discord.Enable {
+		_ = DistributeToDiscord(ctx, cfg, message, projectMap, dg)
+	}
+
+	return nil
+}
+
+// DistributeToGithub will craft and send an issue genration request
+func DistributeToGithub(ctx context.Context, cfg *config.Config) error {
+	_, span := otel.Tracer("Receiver").Start(ctx, "distributor.Distribute.DistributeToGithub")
 	defer span.End()
 
 	var repoTitle string = "repo_title"
@@ -40,9 +61,29 @@ func Distribute(ctx context.Context, cfg *config.Config) error {
 
 	if err := gitHubRequest.Send(); err != nil {
 		log.Fatal("GitHub Send Error:", err)
+		return err
 	}
 
-	// Send data to Discord as a channel message with context
+	return nil
+}
+
+// DistributeToDiscord will craft a message embed and send it to discord
+func DistributeToDiscord(ctx context.Context, cfg *config.Config, message *models.JiraWebhookMessage, projectMap *models.ProjectMap, dg *discordgo.Session) error {
+	_, span := otel.Tracer("Receiver").Start(ctx, "distributor.Distribute.DistributeToDiscord")
+	defer span.End()
+
+	embed := &discordgo.MessageEmbed{
+		URL:         fmt.Sprintf("%s%s", cfg.Jira.BaseUrl, projectMap.JiraProjectKey),
+		Author:      &discordgo.MessageEmbedAuthor{},
+		Color:       0x00ff00,
+		Description: message.Issue.Fields.Summary,
+	}
+
+	_, err := dg.ChannelMessageSendEmbed(projectMap.DiscordProjectID, embed)
+	if err != nil {
+		log.Print("Embed Send Error", err)
+		return err
+	}
 
 	return nil
 }
