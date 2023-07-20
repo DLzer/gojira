@@ -3,6 +3,7 @@ module github.com/DLzer/gojira
 go 1.19
 
 require (
+	github.com/bwmarrin/discordgo v0.27.1
 	github.com/common-nighthawk/go-figure v0.0.0-20210622060536-734e95fb86be
 	github.com/labstack/echo/v4 v4.10.2
 	github.com/prometheus/client_golang v1.16.0
@@ -15,7 +16,6 @@ require (
 
 require (
 	github.com/beorn7/perks v1.0.1 // indirect
-	github.com/bwmarrin/discordgo v0.27.1 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
