@@ -31,7 +31,7 @@ type Server struct {
 
 // NewServer constructor
 func NewServer(cfg *config.Config, redisClient *redis.Client, dg *discordgo.Session, logger logger.Logger) *Server {
-	return &Server{echo: echo.New(), cfg: cfg, redisClient: redisClient, logger: logger}
+	return &Server{echo: echo.New(), cfg: cfg, redisClient: redisClient, dg: dg, logger: logger}
 }
 
 func (s *Server) Run() error {

@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/DLzer/gojira/config"
 	"github.com/DLzer/gojira/internal/receiver"
@@ -22,16 +23,30 @@ func NewReceiverService(cfg *config.Config, logger logger.Logger) receiver.Servi
 	return &receiverService{cfg: cfg, logger: logger}
 }
 
+// Accept receives the JIRA Webhook Message and starts the process of interpreting and dispatching to all enabled services
 func (s *receiverService) Accept(ctx context.Context, message *models.JiraWebhookMessage, dg *discordgo.Session) error {
 	ctx, span := otel.Tracer("Receiver").Start(ctx, "receiverService.Accept")
 	defer span.End()
 
+	// Interpret
 	eventMap := interpreter.Interpret(ctx, message)
-	distributionMap := distributor.MapDistribution(ctx, message, eventMap)
 
-	err := distributor.Distribute(ctx, s.cfg, message, distributionMap, dg)
+	fmt.Println("Event Map", eventMap)
+
+	// Distribution Map
+	distributionMap, err := distributor.MapDistribution(ctx, message, eventMap)
+	if err != nil {
+		s.logger.Info("Error", err)
+		return nil
+	}
+
+	fmt.Println("Distribution Map", distributionMap)
+
+	// Distribute
+	err = distributor.Distribute(ctx, s.cfg, message, distributionMap, eventMap, dg)
 	if err != nil {
 		s.logger.Info(err)
+		return nil
 	}
 
 	return nil
