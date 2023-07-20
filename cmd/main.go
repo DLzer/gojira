@@ -6,9 +6,9 @@ import (
 
 	"github.com/DLzer/gojira/config"
 	"github.com/DLzer/gojira/internal/server"
-	"github.com/DLzer/gojira/pkg/db/redis"
 	"github.com/DLzer/gojira/pkg/logger"
 	"github.com/DLzer/gojira/pkg/utils"
+	"github.com/bwmarrin/discordgo"
 	"github.com/common-nighthawk/go-figure"
 )
 
@@ -32,11 +32,21 @@ func main() {
 	appLogger.InitLogger()
 	appLogger.Infof("AppVersion: %s, LogLevel: %s, Mode: %s, SSL: %v", cfg.Server.AppVersion, cfg.Logger.Level, cfg.Server.Mode, cfg.Server.SSL)
 
+	var dg *discordgo.Session
+	if cfg.Discord.Enable {
+		dg, err = discordgo.New("Bot " + cfg.Discord.BotToken)
+		if err != nil {
+			appLogger.Fatal(err)
+			return
+		}
+		defer dg.Close()
+	}
+
 	// Starting Redis
-	redisDB := redis.NewRedisConnection(cfg.Redis.RedisAddr, cfg.Redis.RedisUsername, cfg.Redis.RedisPassword)
+	// redisDB := redis.NewRedisConnection(cfg.Redis.RedisAddr, cfg.Redis.RedisUsername, cfg.Redis.RedisPassword)
 
 	// Start the server
-	s := server.NewServer(cfg, redisDB, appLogger)
+	s := server.NewServer(cfg, nil, dg, appLogger)
 	if err = s.Run(); err != nil {
 		log.Fatal(err)
 	}
