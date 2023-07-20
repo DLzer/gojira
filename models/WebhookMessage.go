@@ -1,10 +1,8 @@
 package models
 
-import "time"
-
 type JiraWebhookMessage struct {
 	ID           int           `json:"id"`
-	Timestamp    *time.Time    `json:"timestamp"`
+	Timestamp    int           `json:"timestamp"`
 	Issue        JiraIssue     `json:"issue"`
 	User         JiraUser      `json:"user"`
 	ChangeLog    JiraChangeLog `json:"changelog"`
@@ -13,7 +11,7 @@ type JiraWebhookMessage struct {
 }
 
 type JiraIssue struct {
-	ID      int        `json:"id"`
+	ID      string     `json:"id"`
 	SelfURL string     `json:"self"`
 	Key     string     `json:"key"`
 	Fields  JiraFields `json:"fields"`
@@ -28,12 +26,18 @@ type JiraFields struct {
 }
 
 type JiraUser struct {
-	SelfURL      string `json:"self"`
-	Name         string `json:"name"`
-	Key          string `json:"key"`
-	EmailAddress string `json:"emailAddress"`
-	DisplayName  string `json:"displayName"`
-	Active       string `json:"active"`
+	SelfURL      string      `json:"self"`
+	Name         string      `json:"name"`
+	Key          string      `json:"key"`
+	EmailAddress string      `json:"emailAddress"`
+	AvatarUrls   AvatarSizes `json:"avatarUrls,omitempty"`
+	DisplayName  string      `json:"displayName"`
+	Active       string      `json:"active"`
+}
+
+type AvatarSizes struct {
+	Small string `json:"16x16"`
+	Large string `json:"48x48"`
 }
 
 type JiraChangeLog struct {
