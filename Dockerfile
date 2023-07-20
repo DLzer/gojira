@@ -38,6 +38,7 @@ RUN adduser -S elf -u 1001
 # Copy the Pre-built binary file from the previous stage. Observe we also copied the .env file
 COPY --from=builder /app/cmd/main .
 COPY --from=builder /app/config/config-docker.yaml .
+copy /project_map.json ./project_map.json
 
 # Expose port 8080 to the outside world
 EXPOSE 5000
