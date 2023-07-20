@@ -40,9 +40,12 @@ github:
   token: your_github_token
   version: "2022-11-28"
   owner: your_github_owner_title
+  enable: false
 
 discord:
-  ApiKey: your_discord_api_key
+  BotToken: your_discord_api_key
+  enable: true
 
 slack:
   ApiKey: your_slack_api_key
+  enable: false

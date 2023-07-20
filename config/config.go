@@ -69,16 +69,19 @@ type Github struct {
 	Token   string
 	Version string
 	Owner   string
+	Enable  bool
 }
 
 // Discord Config
 type Discord struct {
-	ApiKey string
+	BotToken string
+	Enable   bool
 }
 
 // Slack Config
 type Slack struct {
 	ApiKey string
+	Enable bool
 }
 
 // Load config file from given path
