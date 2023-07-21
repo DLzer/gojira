@@ -34,6 +34,10 @@ Docker
 docker-compose -f docker-compose.local.yml up --build
 ```
 
+### Enable Discord Bot
+
+The discord bot is run with [discordgo](https://github.com/bwmarrin/discordgo). To enable the bot to send messages in discord you will need a few things to get started. The first is setting up a bot in discord developer console which can be found [here](https://discord.com/developers). Create your bot, give it the proper permissions to send messages/embeds, copy the Bot Token, then invite it to your server(s). The bot token should be placed in the config under `discord: BotToken`. Enable the discord bot in the config then start/restart this application. The bot can be set up to filter all incoming webhook messages to one channel, or to split incoming messages into unique channels. 
+
 ## How it works 🔥
 
 JIRA is the staple of this project, and this was built for personal use for digesting my own JIRA data and effectively distributing it to systems that I currently use.
