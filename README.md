@@ -8,9 +8,41 @@ GoJira is a fully open source data distribution tool that connects JIRA webhooks
 
 You can either download the binary relative to your operating system and fire that baby up, clone the repository and run it natively, or use docker to compose the app and it's extra goodies ( Prom, Jaeger, Redis, etc... )
 
-### Install binary
+### Clone, Fork, Download the latest version
 
-Download, install, and run the binary for the latest release that matches your Operating System.
+The project can be run in a variety of ways, with a large array of targets (OS, docker, system, etc..)
+
+### Configure mappings
+
+For now the mapping for JIRA->Distribution is made from the `project_map.json` file at the project root. In the future this will be better handled via sql-lite or some other in-memory datastore.
+
+Add your project mapping to the `project_map.json` file in the following format:
+```json
+[
+    {
+        "ProjectKey": [
+            "ATEST"
+        ],
+        "GitHubRepositoryName": "test_repo_a",
+        "DiscordChannelID": "9902741758022972"
+    },
+    {
+        "ProjectKey": [
+            "BTEST",
+            "CTEST"
+        ],
+        "GitHubRepositoryName": "test_repo_b",
+        "DiscordChannelID": "599925012599"
+    }
+]
+```
+
+The latest version allows mapping multiple JIRA projects to singular output channels in the case you have something like a `#jira-updates` channel in Discord or Slack.
+
+### For Discord
+
+This project is ran as a Discord bot using [DiscordGo](https://github.com/bwmarrin/discordgo), as such you will need a Discord Bot Token entered in the `config.yaml` as well as proper bot permissions for your Bot to actually run.
+The first half of [this article](https://0x2142.com/how-to-discordgo-bot/) walks through the proper instructions on setting up a new bot and inviting it.
 
 ### Run the project
 
