@@ -1,11 +1,16 @@
 [
     {
-        "ProjectKey": "ATEST",
+        "ProjectKey": [
+            "ATEST"
+        ],
         "GitHubRepositoryName": "test_repo_a",
         "DiscordChannelID": "990274179658022972"
     },
     {
-        "ProjectKey": "BTEST",
+        "ProjectKey": [
+            "BTEST",
+            "CTEST"
+        ],
         "GitHubRepositoryName": "test_repo_b",
         "DiscordChannelID": "59992105012599"
     }
