@@ -6,9 +6,11 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"strings"
 
 	"github.com/DLzer/gojira/config"
 	"github.com/DLzer/gojira/models"
+	"github.com/DLzer/gojira/pkg/utils"
 	"github.com/bwmarrin/discordgo"
 	"go.opentelemetry.io/otel"
 )
@@ -32,7 +34,7 @@ func MapDistribution(ctx context.Context, message *models.JiraWebhookMessage, ev
 	}
 
 	for x := range projectMap {
-		if projectMap[x].ProjectKey == event.EventKey {
+		if utils.StringSliceContains(projectMap[x].ProjectKey, event.EventKey) {
 			return &projectMap[x], nil
 		}
 	}
@@ -97,7 +99,7 @@ func DistributeToDiscord(ctx context.Context, cfg *config.Config, message *model
 		Title: fmt.Sprintf("%s-%s %s", event.EventKey, event.EventID, message.Issue.Fields.Summary),
 		URL:   fmt.Sprintf("%s/%s%s", cfg.Jira.BaseUrl, event.EventKey, event.EventID),
 		Author: &discordgo.MessageEmbedAuthor{
-			Name:    message.User.Name,
+			Name:    strings.Title(message.User.Name),
 			IconURL: message.User.AvatarUrls.Small,
 		},
 		Color:       0x00ff00,
