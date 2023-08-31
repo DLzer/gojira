@@ -48,6 +48,7 @@ github:
 discord:
   BotToken: your_discord_api_key
   Enable: true
+  GuildID: "your guild id"
 
 slack:
   ApiKey: your_slack_api_key

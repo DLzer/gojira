@@ -4,8 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
+	"os"
 	"strings"
 
 	"github.com/DLzer/gojira/config"
@@ -21,7 +21,7 @@ func MapDistribution(ctx context.Context, message *models.JiraWebhookMessage, ev
 	defer span.End()
 
 	// Load ProjectMap File
-	file, err := ioutil.ReadFile("project_map.json")
+	file, err := os.ReadFile("project_map.json")
 	if err != nil {
 		log.Fatal("Error", err)
 	}

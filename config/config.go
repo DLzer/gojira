@@ -82,6 +82,7 @@ type Github struct {
 type Discord struct {
 	BotToken string
 	Enable   bool
+	GuildID  string
 }
 
 // Slack Config

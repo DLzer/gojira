@@ -3,9 +3,11 @@ package main
 import (
 	"log"
 	"os"
+	"os/signal"
 
 	"github.com/DLzer/gojira/config"
 	"github.com/DLzer/gojira/internal/server"
+	"github.com/DLzer/gojira/pkg/discord_cmd"
 	"github.com/DLzer/gojira/pkg/logger"
 	"github.com/DLzer/gojira/pkg/utils"
 	"github.com/bwmarrin/discordgo"
@@ -14,6 +16,8 @@ import (
 
 func main() {
 	figure.NewFigure("GoJIRA", "isometric1", true).Print()
+
+	stop := make(chan os.Signal, 1)
 
 	// Loading Configuration
 	configPath := utils.GetConfigPath(os.Getenv("config"))
@@ -48,6 +52,11 @@ func main() {
 		defer discordSession.Close()
 	}
 
+	discordCommandHandler := discord_cmd.NewDiscordCommandsHandler(discordSession, cfg.Discord.GuildID)
+	discordCommandHandler.Init()
+	discordCommandHandler.EnableCommands()
+	appLogger.Infof("Discord Commands Enabled")
+
 	// Starting Redis
 	// redisDB := redis.NewRedisConnection(cfg.Redis.RedisAddr, cfg.Redis.RedisUsername, cfg.Redis.RedisPassword)
 
@@ -56,4 +65,14 @@ func main() {
 	if err = s.Run(); err != nil {
 		log.Fatal(err)
 	}
+
+	signal.Notify(stop, os.Interrupt)
+	log.Println("Press Ctrl+C to exit")
+	<-stop
+
+	discordCommandHandler.RemoveCommands()
+}
+
+func NewDiscordCommandsHandler(discordSession *discordgo.Session, s string) {
+	panic("unimplemented")
 }
