@@ -12,7 +12,7 @@ develop:
 
 run-linter:
 	echo "Starting linters"
-	golangci-lint run ./...
+	golangci-lint run ./... --timeout=20m0s
 
 # ==============================================================================
 # Main
