@@ -26,6 +26,9 @@ build:
 test:
 	go test -cover ./...
 
+release:
+	goreleaser release --clean
+
 
 # ==============================================================================
 # Modules support
