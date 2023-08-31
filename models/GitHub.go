@@ -56,10 +56,12 @@ func (g *GitHubRequest) Send() error {
 
 	client := http.Client{Timeout: 10 * time.Second}
 	// send the request
-	_, err = client.Do(req)
+	res, err := client.Do(req)
 	if err != nil {
 		return err
 	}
+
+	res.Body.Close()
 
 	return nil
 }

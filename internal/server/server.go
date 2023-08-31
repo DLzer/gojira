@@ -52,9 +52,13 @@ func (s *Server) Run() error {
 
 	// If Debug=true start Debug HTTP server
 	if s.cfg.Server.Debug {
+		server := &http.Server{
+			Addr:              s.cfg.Server.PprofPort,
+			ReadHeaderTimeout: 3 * time.Second,
+		}
 		go func() {
 			s.logger.Infof("Starting Debug Server on PORT: %s", s.cfg.Server.PprofPort)
-			if err := http.ListenAndServe(s.cfg.Server.PprofPort, http.DefaultServeMux); err != nil {
+			if err := server.ListenAndServe(); err != nil {
 				s.logger.Errorf("Error PPROF ListenAndServe: %s", err)
 			}
 		}()

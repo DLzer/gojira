@@ -6,13 +6,14 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"strings"
 
 	"github.com/DLzer/gojira/config"
 	"github.com/DLzer/gojira/models"
 	"github.com/DLzer/gojira/pkg/utils"
 	"github.com/bwmarrin/discordgo"
 	"go.opentelemetry.io/otel"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 // MapDistribution readsd the incomning message and event to return an object with the relative outgoing project IDs
@@ -28,7 +29,7 @@ func MapDistribution(ctx context.Context, message *models.JiraWebhookMessage, ev
 
 	var projectMap []models.ProjectMap
 
-	err = json.Unmarshal([]byte(file), &projectMap)
+	err = json.Unmarshal(file, &projectMap)
 	if err != nil {
 		log.Fatal("Error", err)
 	}
@@ -94,12 +95,12 @@ func DistributeToDiscord(ctx context.Context, cfg *config.Config, message *model
 	defer span.End()
 
 	fmt.Println("Attempting Discord Dispatch to Channel: ", projectMap.DiscordChannelID)
-
+	caser := cases.Title(language.AmericanEnglish)
 	embed := &discordgo.MessageEmbed{
 		Title: fmt.Sprintf("%s-%s %s", event.EventKey, event.EventID, message.Issue.Fields.Summary),
 		URL:   fmt.Sprintf("%s/%s%s", cfg.Jira.BaseUrl, event.EventKey, event.EventID),
 		Author: &discordgo.MessageEmbedAuthor{
-			Name:    strings.Title(message.User.Name),
+			Name:    caser.String(message.User.Name),
 			IconURL: message.User.AvatarUrls.Small,
 		},
 		Color:       0x00ff00,

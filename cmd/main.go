@@ -48,7 +48,9 @@ func main() {
 	}
 
 	if discordSession != nil {
-		discordSession.Open()
+		if err := discordSession.Open(); err != nil {
+			log.Fatal(err)
+		}
 		defer discordSession.Close()
 	}
 
@@ -56,9 +58,6 @@ func main() {
 	discordCommandHandler.Init()
 	discordCommandHandler.EnableCommands()
 	appLogger.Infof("Discord Commands Enabled")
-
-	// Starting Redis
-	// redisDB := redis.NewRedisConnection(cfg.Redis.RedisAddr, cfg.Redis.RedisUsername, cfg.Redis.RedisPassword)
 
 	// Start the server
 	s := server.NewServer(cfg, nil, discordSession, appLogger)

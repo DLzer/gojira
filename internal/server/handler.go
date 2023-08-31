@@ -61,10 +61,7 @@ func (s *Server) MapHandlers(e *echo.Echo) error {
 	}
 	e.Use(middleware.KeyAuthWithConfig(middleware.KeyAuthConfig{
 		Skipper: func(c echo.Context) bool {
-			if strings.Contains(c.Request().URL.Path, "/health") {
-				return true
-			}
-			return false
+			return strings.Contains(c.Request().URL.Path, "/health")
 		},
 		KeyLookup: "header:x-api-key",
 		Validator: func(key string, c echo.Context) (bool, error) {
