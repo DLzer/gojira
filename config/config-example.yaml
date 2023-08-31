@@ -53,3 +53,6 @@ discord:
 slack:
   ApiKey: your_slack_api_key
   Enable: false
+
+chatgpt:
+  token: sk-something

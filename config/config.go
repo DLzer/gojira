@@ -17,6 +17,7 @@ type Config struct {
 	Logger  Logger
 	Github  Github
 	Discord Discord
+	Chatgpt Chatgpt
 }
 
 // Server config struct
@@ -89,6 +90,11 @@ type Discord struct {
 type Slack struct {
 	ApiKey string
 	Enable bool
+}
+
+// ChatGPT Config
+type Chatgpt struct {
+	Token string
 }
 
 // Load config file from given path
