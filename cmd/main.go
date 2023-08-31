@@ -52,7 +52,7 @@ func main() {
 		defer discordSession.Close()
 	}
 
-	discordCommandHandler := discord_cmd.NewDiscordCommandsHandler(discordSession, cfg.Discord.GuildID)
+	discordCommandHandler := discord_cmd.NewDiscordCommandsHandler(discordSession, cfg.Discord.GuildID, cfg.Chatgpt.Token)
 	discordCommandHandler.Init()
 	discordCommandHandler.EnableCommands()
 	appLogger.Infof("Discord Commands Enabled")
@@ -71,8 +71,4 @@ func main() {
 	<-stop
 
 	discordCommandHandler.RemoveCommands()
-}
-
-func NewDiscordCommandsHandler(discordSession *discordgo.Session, s string) {
-	panic("unimplemented")
 }
