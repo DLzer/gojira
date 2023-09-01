@@ -8,6 +8,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+// Holds information about Dicsord Commands
 type DiscordCommandsHandler struct {
 	Session            *discordgo.Session
 	GuildID            string
@@ -17,10 +18,12 @@ type DiscordCommandsHandler struct {
 	CommandHandlers    map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate)
 }
 
+// A constructor to build a new Discord Command Handler
 func NewDiscordCommandsHandler(s *discordgo.Session, gid string, token string) *DiscordCommandsHandler {
 	return &DiscordCommandsHandler{Session: s, GuildID: gid, ChatGPTToken: token}
 }
 
+// Initializes commands and their handlers
 func (d *DiscordCommandsHandler) Init() {
 	d.Commands = d.GetCommands()
 	d.CommandHandlers = d.GetCommandHandlers()
@@ -32,6 +35,7 @@ func (d *DiscordCommandsHandler) Init() {
 	})
 }
 
+// Enables the range of commands available in the global struct
 func (d *DiscordCommandsHandler) EnableCommands() {
 	registeredCommands := make([]*discordgo.ApplicationCommand, len(d.Commands))
 	for i, v := range d.Commands {
@@ -44,16 +48,13 @@ func (d *DiscordCommandsHandler) EnableCommands() {
 	d.RegisteredCommands = registeredCommands
 }
 
+// Removes the range of commands available in the global struct
 func (d *DiscordCommandsHandler) RemoveCommands() {
 	log.Println("Removing commands...")
 	// // We need to fetch the commands, since deleting requires the command ID.
 	// // We are doing this from the returned commands on line 375, because using
 	// // this will delete all the commands, which might not be desirable, so we
 	// // are deleting only the commands that we added.
-	// registeredCommands, err := s.ApplicationCommands(s.State.User.ID, *GuildID)
-	// if err != nil {
-	// 	log.Fatalf("Could not fetch registered commands: %v", err)
-	// }
 
 	if len(d.RegisteredCommands) == 0 {
 		log.Println("No commands to remove...")
@@ -68,6 +69,7 @@ func (d *DiscordCommandsHandler) RemoveCommands() {
 	}
 }
 
+// Wrapper for making a GPT request
 func GPTRequest(token string, message string) string {
 	res, err := chatgpt.MakeGPTRequest(token, message)
 	if err != nil {
@@ -77,6 +79,7 @@ func GPTRequest(token string, message string) string {
 	return res
 }
 
+// Returns a slice of the top level command options
 func (d *DiscordCommandsHandler) GetCommands() []*discordgo.ApplicationCommand {
 	commands := []*discordgo.ApplicationCommand{
 		{
@@ -96,6 +99,7 @@ func (d *DiscordCommandsHandler) GetCommands() []*discordgo.ApplicationCommand {
 	return commands
 }
 
+// Returns a slice of the command callback methods
 func (d *DiscordCommandsHandler) GetCommandHandlers() map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	commandHandlers := map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
 		"go-gpt": func(s *discordgo.Session, i *discordgo.InteractionCreate) {

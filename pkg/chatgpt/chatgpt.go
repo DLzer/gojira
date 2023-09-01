@@ -9,6 +9,7 @@ import (
 	"github.com/ayush6624/go-chatgpt"
 )
 
+// Makes a simple ChatGPT request and formats the response
 func MakeGPTRequest(clientKey string, message string) (string, error) {
 	c, err := chatgpt.NewClient(clientKey)
 	if err != nil {
