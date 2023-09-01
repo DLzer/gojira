@@ -113,7 +113,7 @@ func (d *DiscordCommandsHandler) GetCommandHandlers() map[string]func(s *discord
 				prompt = option.StringValue()
 			}
 
-			msgformat := fmt.Sprintf("*Your Prompt*: %s\n *Your answer should appear shortly*!\n", prompt)
+			msgformat := fmt.Sprintf("**Your Prompt:** %s\n *Your answer should appear shortly*!\n", prompt)
 
 			if err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 				// Ignore type for now, they will be discussed in "responses"
@@ -127,7 +127,7 @@ func (d *DiscordCommandsHandler) GetCommandHandlers() map[string]func(s *discord
 
 			response := GPTRequest(d.ChatGPTToken, prompt+" in less than 1500 chracters.")
 
-			content := msgformat + "Reply: " + response
+			content := msgformat + "**Reply:** " + response
 			_, err := s.InteractionResponseEdit(i.Interaction, &discordgo.WebhookEdit{
 				Content: &content,
 			})
