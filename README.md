@@ -126,4 +126,8 @@ Not absolutely necessary but the docker compose will also spin up a Grafana cont
 ### Jaeger
 Originally I had included Jaeger in this build, and it still does have some remnants but with all the other observability baked in I didn't see it as absolutely necessary. If you plan on configuring this as a microservice or want to create a distributed system with this project build in Jaeger can quickly be added to the core service spin-up.
 
+### Thanks to:
+- Dan for the Idea!
+- Chantel for the support!
+
 
